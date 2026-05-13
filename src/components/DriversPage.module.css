@@ -227,3 +227,69 @@
 .confirmDeleteBtn:hover {
   background: #a01515;
 }
+
+/* Credentials dialog */
+.credsDialog {
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 24px;
+  max-width: 400px;
+  width: 100%;
+}
+
+.credsTitle {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 6px;
+}
+
+.credsNote {
+  font-size: 12px;
+  color: var(--error);
+  margin-bottom: 18px;
+}
+
+.credRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  background: var(--primary-faint);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+}
+
+.credLabel {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  min-width: 72px;
+}
+
+.credValue {
+  flex: 1;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  font-family: monospace;
+  word-break: break-all;
+}
+
+.copyBtn {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary-mid);
+  padding: 3px 8px;
+  border: 1px solid var(--primary-mid);
+  border-radius: var(--radius-sm);
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+
+.copyBtn:hover {
+  background: var(--primary-faint);
+}

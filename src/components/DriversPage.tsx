@@ -10,6 +10,7 @@ export default function DriversPage() {
   const [error, setError] = useState<string | null>(null)
   const [dialogDriver, setDialogDriver] = useState<Driver | null | undefined>(undefined)
   const [confirmDelete, setConfirmDelete] = useState<Driver | null>(null)
+  const [newCreds, setNewCreds] = useState<{ username: string; password: string } | null>(null)
 
   useEffect(() => {
     void getDrivers()
@@ -23,8 +24,9 @@ export default function DriversPage() {
       const updated = await updateDriver({ ...data, id: dialogDriver.id })
       setDrivers(ds => ds.map(d => d.id === updated.id ? updated : d))
     } else {
-      const created = await createDriver(data)
-      setDrivers(ds => [...ds, created])
+      const response = await createDriver(data)
+      setDrivers(ds => [...ds, response.driver])
+      setNewCreds({ username: response.username, password: response.generatedPassword })
     }
   }
 
@@ -119,11 +121,33 @@ export default function DriversPage() {
         <div className={styles.confirmOverlay} onClick={e => e.target === e.currentTarget && setConfirmDelete(null)}>
           <div className={styles.confirmDialog}>
             <p className={styles.confirmText}>
-              Delete <strong>{confirmDelete.driverName}</strong>? This also removes all their schedule entries.
+              Delete <strong>{confirmDelete.driverName}</strong>? This also removes all their schedule entries and account.
             </p>
             <div className={styles.confirmActions}>
               <button className={styles.cancelBtn} onClick={() => setConfirmDelete(null)}>Cancel</button>
               <button className={styles.confirmDeleteBtn} onClick={handleDelete}>Delete</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {newCreds && (
+        <div className={styles.confirmOverlay}>
+          <div className={styles.credsDialog}>
+            <h3 className={styles.credsTitle}>Account created</h3>
+            <p className={styles.credsNote}>Save this password — it won't be shown again.</p>
+            <div className={styles.credRow}>
+              <span className={styles.credLabel}>Username</span>
+              <span className={styles.credValue}>{newCreds.username}</span>
+              <button className={styles.copyBtn} onClick={() => void navigator.clipboard.writeText(newCreds.username)}>Copy</button>
+            </div>
+            <div className={styles.credRow}>
+              <span className={styles.credLabel}>Password</span>
+              <span className={styles.credValue}>{newCreds.password}</span>
+              <button className={styles.copyBtn} onClick={() => void navigator.clipboard.writeText(newCreds.password)}>Copy</button>
+            </div>
+            <div className={styles.confirmActions}>
+              <button className={styles.addBtn} onClick={() => setNewCreds(null)}>Done</button>
             </div>
           </div>
         </div>

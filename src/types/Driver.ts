@@ -8,3 +8,9 @@ export interface Driver {
   fridayWorkStart: string
   fridayWorkEnd: string
 }
+
+export interface CreateDriverResponse {
+  driver: Driver
+  username: string
+  generatedPassword: string
+}
