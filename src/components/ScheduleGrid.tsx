@@ -4,6 +4,7 @@ import styles from './ScheduleGrid.module.css'
 interface Props {
   drivers: Driver[]
   entries: Map<string, boolean>
+  pinnedEntries: Set<string>
   monthlyHours: Record<string, number>
   dates: string[]
   today: string
@@ -20,7 +21,7 @@ function parseDate(dateStr: string) {
   }
 }
 
-export default function ScheduleGrid({ drivers, entries, monthlyHours, dates, today, onToggle, loading }: Props) {
+export default function ScheduleGrid({ drivers, entries, pinnedEntries, monthlyHours, dates, today, onToggle, loading }: Props) {
   if (drivers.length === 0) {
     return (
       <div className={styles.empty}>
@@ -72,15 +73,17 @@ export default function ScheduleGrid({ drivers, entries, monthlyHours, dates, to
                   <span className={styles.dayMonth}>{dayMonth}</span>
                 </td>
                 {drivers.map(driver => {
-                  const working = entries.get(`${driver.id}-${date}`) ?? false
+                  const key = `${driver.id}-${date}`
+                  const working = entries.get(key) ?? false
+                  const pinned = pinnedEntries.has(key)
                   return (
                     <td
                       key={driver.id}
                       className={`${styles.cell} ${working ? styles.working : styles.notWorking}`}
                       onClick={() => !loading && onToggle(driver.id, date)}
-                      title={working ? 'Working — click to toggle' : 'Off — click to toggle'}
+                      title={working ? (pinned ? 'Working (pinned) — click to toggle' : 'Working — click to toggle') : 'Off — click to toggle'}
                     >
-                      {working ? '✓' : '✗'}
+                      {working ? (pinned ? <span className={styles.pinnedCell}>✓<span className={styles.pinIcon}>📌</span></span> : '✓') : '✗'}
                     </td>
                   )
                 })}

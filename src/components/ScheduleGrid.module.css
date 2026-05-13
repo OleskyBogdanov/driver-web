@@ -180,3 +180,15 @@
   background: var(--not-working-bg);
   color: #b0b8cc;
 }
+
+.pinnedCell {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.pinIcon {
+  font-size: 10px;
+  line-height: 1;
+  opacity: 0.8;
+}

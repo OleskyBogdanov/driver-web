@@ -27,6 +27,7 @@ export default function SchedulePage({ isAdmin }: Props) {
   const [month, setMonth] = useState(now.getMonth())
   const [drivers, setDrivers] = useState<Driver[]>([])
   const [entries, setEntries] = useState<Map<string, boolean>>(new Map())
+  const [pinnedEntries, setPinnedEntries] = useState<Set<string>>(new Set())
   const [monthlyHours, setMonthlyHours] = useState<Record<string, number>>({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -53,8 +54,13 @@ export default function SchedulePage({ isAdmin }: Props) {
       ])
       setDrivers(driversData)
       const map = new Map<string, boolean>()
-      scheduleData.entries.forEach(e => map.set(`${e.driverId}-${e.date}`, e.working))
+      const pinned = new Set<string>()
+      scheduleData.entries.forEach(e => {
+        map.set(`${e.driverId}-${e.date}`, e.working)
+        if (e.pinned) pinned.add(`${e.driverId}-${e.date}`)
+      })
       setEntries(map)
+      setPinnedEntries(pinned)
       setMonthlyHours(scheduleData.monthlyHoursPerDriver)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load schedule')
@@ -71,8 +77,15 @@ export default function SchedulePage({ isAdmin }: Props) {
     try {
       const response = await generateSchedule(from, to)
       const map = new Map(entries)
-      response.entries.forEach(e => map.set(`${e.driverId}-${e.date}`, e.working))
+      const pinned = new Set(pinnedEntries)
+      response.entries.forEach(e => {
+        map.set(`${e.driverId}-${e.date}`, e.working)
+        const key = `${e.driverId}-${e.date}`
+        if (e.pinned) pinned.add(key)
+        else pinned.delete(key)
+      })
       setEntries(map)
+      setPinnedEntries(pinned)
       setMonthlyHours(response.monthlyHoursPerDriver)
       showToast('Schedule generated')
     } catch (e) {
@@ -89,6 +102,12 @@ export default function SchedulePage({ isAdmin }: Props) {
     try {
       const result = await setWorking(driverId, date, newWorking)
       setEntries(prev => new Map(prev).set(key, result.working))
+      setPinnedEntries(prev => {
+        const next = new Set(prev)
+        if (result.pinned) next.add(key)
+        else next.delete(key)
+        return next
+      })
     } catch (e) {
       setEntries(prev => new Map(prev).set(key, !newWorking))
       setError(e instanceof Error ? e.message : 'Failed to update')
@@ -138,6 +157,7 @@ export default function SchedulePage({ isAdmin }: Props) {
       <ScheduleGrid
         drivers={drivers}
         entries={entries}
+        pinnedEntries={pinnedEntries}
         monthlyHours={monthlyHours}
         dates={dates}
         today={todayStr}

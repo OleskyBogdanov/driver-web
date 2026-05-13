@@ -3,6 +3,7 @@ export interface ScheduleEntry {
   date: string
   working: boolean
   shiftHours: number
+  pinned: boolean
 }
 
 export interface ScheduleResponse {
