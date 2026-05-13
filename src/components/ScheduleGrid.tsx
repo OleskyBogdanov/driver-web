@@ -79,11 +79,11 @@ export default function ScheduleGrid({ drivers, entries, pinnedEntries, monthlyH
                   return (
                     <td
                       key={driver.id}
-                      className={`${styles.cell} ${working ? styles.working : styles.notWorking}`}
+                      className={`${styles.cell} ${working ? styles.working : styles.notWorking} ${pinned ? styles.pinned : ''}`}
                       onClick={() => !loading && onToggle(driver.id, date)}
                       title={working ? (pinned ? 'Working (pinned) — click to toggle' : 'Working — click to toggle') : 'Off — click to toggle'}
                     >
-                      {working ? (pinned ? <span className={styles.pinnedCell}>✓<span className={styles.pinIcon}>📌</span></span> : '✓') : '✗'}
+                      {working ? '✓' : '✗'}
                     </td>
                   )
                 })}

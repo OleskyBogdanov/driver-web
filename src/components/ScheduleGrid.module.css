@@ -151,6 +151,7 @@
 
 /* Schedule cells */
 .cell {
+  position: relative;
   text-align: center;
   padding: 0;
   height: 38px;
@@ -181,14 +182,11 @@
   color: #b0b8cc;
 }
 
-.pinnedCell {
-  display: inline-flex;
-  align-items: center;
-  gap: 2px;
-}
-
-.pinIcon {
-  font-size: 10px;
+.pinned::after {
+  content: '📌';
+  position: absolute;
+  top: 2px;
+  right: 3px;
+  font-size: 11px;
   line-height: 1;
-  opacity: 0.8;
 }
