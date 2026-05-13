@@ -1,0 +1,182 @@
+.wrapper {
+  overflow: auto;
+  flex: 1;
+  transition: opacity 0.2s;
+}
+
+.dimmed {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.empty {
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 15px;
+}
+
+.table {
+  border-collapse: collapse;
+  min-width: 100%;
+  font-size: 13px;
+}
+
+/* Sticky header row */
+.table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--primary);
+  color: #fff;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+  white-space: nowrap;
+}
+
+/* Sticky date column */
+.table td:first-child,
+.table th:first-child {
+  position: sticky;
+  left: 0;
+  z-index: 1;
+}
+
+.table thead th:first-child {
+  z-index: 3;
+}
+
+/* Date column header */
+.dateCol {
+  padding: 10px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  min-width: 90px;
+}
+
+/* Driver header cell */
+.th {
+  padding: 8px 6px;
+  text-align: center;
+  min-width: 88px;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.driverHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.driverName {
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.driverSub {
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.driverTimes {
+  font-size: 9.5px;
+  color: rgba(255, 255, 255, 0.6);
+  margin-top: 1px;
+}
+
+.driverHours {
+  font-size: 10px;
+  font-weight: 700;
+  color: #7dd3b0;
+  margin-top: 3px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 1px 6px;
+}
+
+/* Data rows */
+.table tbody tr {
+  border-bottom: 1px solid var(--border);
+  background: var(--card);
+}
+
+.table tbody tr:hover {
+  background: var(--primary-faint);
+}
+
+.weekendRow {
+  background: var(--weekend-bg) !important;
+}
+
+.todayRow {
+  background: var(--today-bg) !important;
+}
+
+.table tbody tr:hover.todayRow {
+  background: #c7dcf7 !important;
+}
+
+/* Date cell */
+.dateCell {
+  padding: 6px 12px;
+  background: inherit;
+  white-space: nowrap;
+  border-right: 2px solid var(--border);
+}
+
+.todayDate .weekday,
+.todayDate .dayMonth {
+  color: var(--primary-mid);
+  font-weight: 700;
+}
+
+.weekday {
+  display: block;
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.dayMonth {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text);
+  margin-top: 1px;
+}
+
+/* Schedule cells */
+.cell {
+  text-align: center;
+  padding: 0;
+  height: 38px;
+  min-width: 88px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  border-left: 1px solid var(--border);
+  transition: background 0.1s, filter 0.1s;
+  user-select: none;
+}
+
+.cell:hover {
+  filter: brightness(0.93);
+}
+
+.cell:active {
+  filter: brightness(0.85);
+}
+
+.working {
+  background: var(--working-bg);
+  color: var(--working);
+}
+
+.notWorking {
+  background: var(--not-working-bg);
+  color: #b0b8cc;
+}
