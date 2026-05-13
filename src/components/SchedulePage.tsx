@@ -5,6 +5,10 @@ import type { Driver } from '../types/Driver'
 import ScheduleGrid from './ScheduleGrid'
 import styles from './SchedulePage.module.css'
 
+interface Props {
+  isAdmin: boolean
+}
+
 function monthDates(year: number, month: number): string[] {
   const dates: string[] = []
   const d = new Date(year, month, 1)
@@ -15,7 +19,7 @@ function monthDates(year: number, month: number): string[] {
   return dates
 }
 
-export default function SchedulePage() {
+export default function SchedulePage({ isAdmin }: Props) {
   const now = new Date()
   const todayStr = now.toISOString().slice(0, 10)
 
@@ -41,8 +45,10 @@ export default function SchedulePage() {
     setLoading(true)
     setError(null)
     try {
+      const storedDriver = localStorage.getItem('driver')
+      const sessionDriver: Driver | null = storedDriver ? JSON.parse(storedDriver) as Driver : null
       const [driversData, scheduleData] = await Promise.all([
-        getDrivers(),
+        isAdmin ? getDrivers() : Promise.resolve(sessionDriver ? [sessionDriver] : []),
         getSchedule(from, to),
       ])
       setDrivers(driversData)
@@ -109,13 +115,15 @@ export default function SchedulePage() {
           <span className={styles.monthLabel}>{monthLabel}</span>
           <button className={styles.arrowBtn} onClick={nextMonth} aria-label="Next month">›</button>
         </div>
-        <button
-          className={styles.generateBtn}
-          onClick={handleGenerate}
-          disabled={loading || drivers.length === 0}
-        >
-          {loading ? 'Working…' : '⚡ Generate'}
-        </button>
+        {isAdmin && (
+          <button
+            className={styles.generateBtn}
+            onClick={handleGenerate}
+            disabled={loading || drivers.length === 0}
+          >
+            {loading ? 'Working…' : '⚡ Generate'}
+          </button>
+        )}
       </div>
 
       {error && (
