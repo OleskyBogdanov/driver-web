@@ -211,6 +211,12 @@
   color: var(--text);
 }
 
+.eventMeta {
+  font-size: 11px;
+  color: var(--primary-mid);
+  font-weight: 500;
+}
+
 .eventPoints {
   font-size: 11px;
   color: var(--text-muted);

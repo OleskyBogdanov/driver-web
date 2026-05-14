@@ -170,6 +170,15 @@
 .type_WASHING              { background: #e6f4ea; color: #2e7d32; }
 .type_TASK                 { background: #fef3e2; color: #e65100; }
 
+.eventMeta {
+  font-size: 11px;
+  color: var(--primary-mid);
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin-top: 2px;
+}
+
 .eventPoints {
   font-size: 11px;
   color: var(--text-muted);
@@ -277,6 +286,32 @@
 .switchLabel {
   font-size: 13px;
   color: var(--text);
+}
+
+.taskFields {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.timeRow {
+  display: flex;
+  gap: 8px;
+}
+
+.timeField {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.fieldLabel {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
 }
 
 .pointsFields {

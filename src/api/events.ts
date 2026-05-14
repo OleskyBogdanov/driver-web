@@ -8,6 +8,9 @@ export interface CreateEventPayload {
   type: EventType
   departurePoint?: string
   arrivalPoint?: string
+  timeFrom?: string
+  timeTo?: string
+  assignedBy?: string
 }
 
 export const getEvents = (from: string, to: string) =>

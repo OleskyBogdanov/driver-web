@@ -32,8 +32,13 @@ export default function EventPanel({
   const [specifyPoints, setSpecifyPoints] = useState(false)
   const [departure, setDeparture] = useState('')
   const [arrival, setArrival] = useState('')
+  const [timeFrom, setTimeFrom] = useState('')
+  const [timeTo, setTimeTo] = useState('')
+  const [assignedBy, setAssignedBy] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+
+  const isTask = type === 'TASK'
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -48,10 +53,16 @@ export default function EventPanel({
         type,
         departurePoint: specifyPoints && departure.trim() ? departure.trim() : undefined,
         arrivalPoint: specifyPoints && arrival.trim() ? arrival.trim() : undefined,
+        timeFrom: isTask && timeFrom ? timeFrom : undefined,
+        timeTo: isTask && timeTo ? timeTo : undefined,
+        assignedBy: isTask && assignedBy.trim() ? assignedBy.trim() : undefined,
       })
       setName('')
       setDeparture('')
       setArrival('')
+      setTimeFrom('')
+      setTimeTo('')
+      setAssignedBy('')
       setSpecifyPoints(false)
     } catch (err) {
       setFormError(err instanceof Error ? err.message : 'Failed to add event')
@@ -98,6 +109,14 @@ export default function EventPanel({
                     <span className={`${styles.eventType} ${styles[`type_${ev.type}`]}`}>
                       {EVENT_TYPE_LABELS[ev.type]}
                     </span>
+                    {ev.type === 'TASK' && (ev.timeFrom || ev.timeTo || ev.assignedBy) && (
+                      <div className={styles.eventMeta}>
+                        {(ev.timeFrom || ev.timeTo) && (
+                          <span>{ev.timeFrom ?? '?'} – {ev.timeTo ?? '?'}</span>
+                        )}
+                        {ev.assignedBy && <span>Set by: {ev.assignedBy}</span>}
+                      </div>
+                    )}
                     {(ev.departurePoint || ev.arrivalPoint) && (
                       <div className={styles.eventPoints}>
                         {ev.departurePoint && <span>From: {ev.departurePoint}</span>}
@@ -135,6 +154,40 @@ export default function EventPanel({
               <option key={t} value={t}>{EVENT_TYPE_LABELS[t]}</option>
             ))}
           </select>
+
+          {isTask && (
+            <div className={styles.taskFields}>
+              <div className={styles.timeRow}>
+                <div className={styles.timeField}>
+                  <label className={styles.fieldLabel}>From</label>
+                  <input
+                    type="time"
+                    className={styles.input}
+                    value={timeFrom}
+                    onChange={e => setTimeFrom(e.target.value)}
+                    disabled={submitting}
+                  />
+                </div>
+                <div className={styles.timeField}>
+                  <label className={styles.fieldLabel}>To</label>
+                  <input
+                    type="time"
+                    className={styles.input}
+                    value={timeTo}
+                    onChange={e => setTimeTo(e.target.value)}
+                    disabled={submitting}
+                  />
+                </div>
+              </div>
+              <input
+                className={styles.input}
+                placeholder="Assigned by"
+                value={assignedBy}
+                onChange={e => setAssignedBy(e.target.value)}
+                disabled={submitting}
+              />
+            </div>
+          )}
 
           <label className={styles.switchRow}>
             <input

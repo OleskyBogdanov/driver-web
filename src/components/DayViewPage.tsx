@@ -125,6 +125,13 @@ export default function DayViewPage({ isAdmin }: Props) {
                           </span>
                           <div className={styles.eventDetails}>
                             <span className={styles.eventName}>{ev.name}</span>
+                            {ev.type === 'TASK' && (ev.timeFrom || ev.timeTo || ev.assignedBy) && (
+                              <span className={styles.eventMeta}>
+                                {(ev.timeFrom || ev.timeTo) && `${ev.timeFrom ?? '?'} – ${ev.timeTo ?? '?'}`}
+                                {(ev.timeFrom || ev.timeTo) && ev.assignedBy && ' · '}
+                                {ev.assignedBy && `Set by: ${ev.assignedBy}`}
+                              </span>
+                            )}
                             {(ev.departurePoint || ev.arrivalPoint) && (
                               <span className={styles.eventPoints}>
                                 {ev.departurePoint && `From: ${ev.departurePoint}`}

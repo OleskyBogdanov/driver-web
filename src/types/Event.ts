@@ -14,4 +14,7 @@ export interface DayEvent {
   type: EventType
   departurePoint?: string
   arrivalPoint?: string
+  timeFrom?: string
+  timeTo?: string
+  assignedBy?: string
 }
