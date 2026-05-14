@@ -5,10 +5,11 @@ interface Props {
   drivers: Driver[]
   entries: Map<string, boolean>
   pinnedEntries: Set<string>
+  eventCounts: Map<string, number>
   monthlyHours: Record<string, number>
   dates: string[]
   today: string
-  onToggle: (driverId: number, date: string) => void
+  onCellClick: (driverId: number, date: string) => void
   loading: boolean
 }
 
@@ -21,7 +22,9 @@ function parseDate(dateStr: string) {
   }
 }
 
-export default function ScheduleGrid({ drivers, entries, pinnedEntries, monthlyHours, dates, today, onToggle, loading }: Props) {
+export default function ScheduleGrid({
+  drivers, entries, pinnedEntries, eventCounts, monthlyHours, dates, today, onCellClick, loading,
+}: Props) {
   if (drivers.length === 0) {
     return (
       <div className={styles.empty}>
@@ -76,14 +79,16 @@ export default function ScheduleGrid({ drivers, entries, pinnedEntries, monthlyH
                   const key = `${driver.id}-${date}`
                   const working = entries.get(key) ?? false
                   const pinned = pinnedEntries.has(key)
+                  const count = eventCounts.get(key) ?? 0
                   return (
                     <td
                       key={driver.id}
                       className={`${styles.cell} ${working ? styles.working : styles.notWorking} ${pinned ? styles.pinned : ''}`}
-                      onClick={() => !loading && onToggle(driver.id, date)}
-                      title={working ? (pinned ? 'Working (pinned) — click to toggle' : 'Working — click to toggle') : 'Off — click to toggle'}
+                      onClick={() => !loading && onCellClick(driver.id, date)}
+                      title="Click to open events"
                     >
                       {working ? '✓' : '✗'}
+                      {count > 0 && <span className={styles.eventBadge}>{count}</span>}
                     </td>
                   )
                 })}

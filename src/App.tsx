@@ -4,9 +4,10 @@ import LoginPage from './components/LoginPage'
 import SchedulePage from './components/SchedulePage'
 import DriversPage from './components/DriversPage'
 import UsersPage from './components/UsersPage'
+import DayViewPage from './components/DayViewPage'
 import type { LoginResponse } from './types/User'
 
-type Tab = 'schedule' | 'drivers' | 'users'
+type Tab = 'schedule' | 'day' | 'drivers' | 'users'
 
 function saveSession(response: LoginResponse) {
   localStorage.setItem('token', response.token)
@@ -80,6 +81,12 @@ export default function App() {
           >
             Schedule
           </button>
+          <button
+            className={`${styles.navBtn} ${tab === 'day' ? styles.active : ''}`}
+            onClick={() => setTab('day')}
+          >
+            Day
+          </button>
           {isAdmin && (
             <button
               className={`${styles.navBtn} ${tab === 'drivers' ? styles.active : ''}`}
@@ -104,6 +111,7 @@ export default function App() {
       </header>
       <main className={styles.main}>
         {tab === 'schedule' && <SchedulePage isAdmin={isAdmin} />}
+        {tab === 'day' && <DayViewPage isAdmin={isAdmin} />}
         {tab === 'drivers' && isAdmin && <DriversPage />}
         {tab === 'users' && isAdmin && <UsersPage />}
       </main>

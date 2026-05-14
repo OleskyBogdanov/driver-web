@@ -190,3 +190,16 @@
   font-size: 11px;
   line-height: 1;
 }
+
+.eventBadge {
+  position: absolute;
+  bottom: 3px;
+  right: 3px;
+  background: var(--primary);
+  color: #fff;
+  font-size: 9px;
+  font-weight: 700;
+  border-radius: 8px;
+  padding: 1px 4px;
+  line-height: 1.4;
+}
