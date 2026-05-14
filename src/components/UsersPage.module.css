@@ -209,6 +209,9 @@
   border-radius: var(--radius);
   font-size: 14px;
   color: var(--text);
+  background: var(--card);
+  width: 100%;
+  box-sizing: border-box;
   outline: none;
   transition: border-color 0.15s;
 }

@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { getUsers, createUser, deleteUser } from '../api/auth'
+import { getDrivers } from '../api/drivers'
 import type { UserInfo } from '../types/User'
+import type { Driver } from '../types/Driver'
 import styles from './UsersPage.module.css'
 
 export default function UsersPage() {
@@ -10,17 +12,18 @@ export default function UsersPage() {
   const [showAddForm, setShowAddForm] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState<UserInfo | null>(null)
 
+  const [drivers, setDrivers] = useState<Driver[]>([])
   const [newUsername, setNewUsername] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [newRole, setNewRole] = useState<'DRIVER' | 'ADMIN'>('DRIVER')
-  const [newDriverId, setNewDriverId] = useState('')
+  const [newDriverId, setNewDriverId] = useState<number | ''>('')
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
 
   useEffect(() => {
-    void getUsers()
-      .then(setUsers)
-      .catch(e => setError(e instanceof Error ? e.message : 'Failed to load users'))
+    void Promise.all([getUsers(), getDrivers()])
+      .then(([u, d]) => { setUsers(u); setDrivers(d) })
+      .catch(e => setError(e instanceof Error ? e.message : 'Failed to load'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -31,17 +34,12 @@ export default function UsersPage() {
       setFormError('Username and password are required')
       return
     }
-    const driverId = newDriverId.trim() ? Number(newDriverId.trim()) : undefined
-    if (newDriverId.trim() && (isNaN(driverId!) || !Number.isInteger(driverId))) {
-      setFormError('Driver ID must be a whole number')
-      return
-    }
     setSaving(true)
     try {
       const created = await createUser({
         username: newUsername.trim(),
         password: newPassword,
-        ...(newRole === 'DRIVER' && driverId !== undefined ? { driverId } : {}),
+        ...(newRole === 'DRIVER' && newDriverId !== '' ? { driverId: newDriverId } : {}),
       })
       setUsers(prev => [...prev, created])
       setNewUsername('')
@@ -177,15 +175,23 @@ export default function UsersPage() {
               </div>
               {newRole === 'DRIVER' && (
                 <div className={styles.field}>
-                  <label className={styles.label}>Driver ID <span className={styles.optional}>(optional)</span></label>
-                  <input
+                  <label className={styles.label}>Driver <span className={styles.optional}>(optional)</span></label>
+                  <select
                     className={styles.input}
-                    type="number"
                     value={newDriverId}
-                    onChange={e => setNewDriverId(e.target.value)}
-                    placeholder="e.g. 1"
+                    onChange={e => setNewDriverId(e.target.value === '' ? '' : Number(e.target.value))}
                     disabled={saving}
-                  />
+                  >
+                    <option value="">— Not linked —</option>
+                    {drivers.map(d => {
+                      const alreadyLinked = users.some(u => u.driverId === d.id)
+                      return (
+                        <option key={d.id} value={d.id} disabled={alreadyLinked}>
+                          {d.driverName} ({d.car} · {d.licensePlate}){alreadyLinked ? ' — already has account' : ''}
+                        </option>
+                      )
+                    })}
+                  </select>
                 </div>
               )}
 
