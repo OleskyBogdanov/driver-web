@@ -7,6 +7,7 @@ interface Props {
   pinnedEntries: Set<string>
   eventCounts: Map<string, number>
   monthlyHours: Record<string, number>
+  taskHours: Record<number, number>
   dates: string[]
   today: string
   onCellClick: (driverId: number, date: string) => void
@@ -23,7 +24,7 @@ function parseDate(dateStr: string) {
 }
 
 export default function ScheduleGrid({
-  drivers, entries, pinnedEntries, eventCounts, monthlyHours, dates, today, onCellClick, loading,
+  drivers, entries, pinnedEntries, eventCounts, monthlyHours, taskHours, dates, today, onCellClick, loading,
 }: Props) {
   if (drivers.length === 0) {
     return (
@@ -55,6 +56,9 @@ export default function ScheduleGrid({
                     )}
                     {hours != null && (
                       <span className={styles.driverHours}>{hours.toFixed(1)} h</span>
+                    )}
+                    {taskHours[driver.id] != null && taskHours[driver.id] > 0 && (
+                      <span className={styles.taskHours}>⚡ {taskHours[driver.id].toFixed(1)} h</span>
                     )}
                   </div>
                 </th>

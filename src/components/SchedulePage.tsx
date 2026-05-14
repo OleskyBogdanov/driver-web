@@ -180,6 +180,16 @@ export default function SchedulePage({ isAdmin }: Props) {
   const eventCounts = new Map<string, number>()
   events.forEach((list, key) => { if (list.length > 0) eventCounts.set(key, list.length) })
 
+  const taskHoursPerDriver: Record<number, number> = {}
+  events.forEach(list => {
+    list.filter(ev => ev.type === 'TASK' && ev.timeFrom && ev.timeTo).forEach(ev => {
+      const [fh, fm] = ev.timeFrom!.split(':').map(Number)
+      const [th, tm] = ev.timeTo!.split(':').map(Number)
+      const h = (th + tm / 60) - (fh + fm / 60)
+      if (h > 0) taskHoursPerDriver[ev.driverId] = (taskHoursPerDriver[ev.driverId] ?? 0) + h
+    })
+  })
+
   return (
     <div className={styles.page}>
       <div className={styles.toolbar}>
@@ -214,6 +224,7 @@ export default function SchedulePage({ isAdmin }: Props) {
         pinnedEntries={pinnedEntries}
         eventCounts={eventCounts}
         monthlyHours={monthlyHours}
+        taskHours={taskHoursPerDriver}
         dates={dates}
         today={todayStr}
         onCellClick={handleCellClick}
