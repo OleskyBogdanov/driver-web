@@ -31,15 +31,16 @@ export default function DayViewPage({ isAdmin }: Props) {
       try {
         const storedDriver = localStorage.getItem('driver')
         const sessionDriver: Driver | null = storedDriver ? JSON.parse(storedDriver) as Driver : null
-        const [driversData, scheduleData, eventsData] = await Promise.all([
+        const [driversData, scheduleData] = await Promise.all([
           isAdmin ? getDrivers() : Promise.resolve(sessionDriver ? [sessionDriver] : []),
           getSchedule(date, date),
-          getEvents(date, date),
         ])
         setDrivers(driversData)
         const workingSet = new Set<number>()
         scheduleData.entries.forEach(e => { if (e.working) workingSet.add(e.driverId) })
         setWorking(workingSet)
+        let eventsData: DayEvent[] = []
+        try { eventsData = await getEvents(date, date) } catch { /* events optional */ }
         const eventsMap = new Map<number, DayEvent[]>()
         eventsData.forEach(ev => {
           const list = eventsMap.get(ev.driverId) ?? []

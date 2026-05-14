@@ -64,10 +64,9 @@ export default function SchedulePage({ isAdmin }: Props) {
     try {
       const storedDriver = localStorage.getItem('driver')
       const sessionDriver: Driver | null = storedDriver ? JSON.parse(storedDriver) as Driver : null
-      const [driversData, scheduleData, eventsData] = await Promise.all([
+      const [driversData, scheduleData] = await Promise.all([
         isAdmin ? getDrivers() : Promise.resolve(sessionDriver ? [sessionDriver] : []),
         getSchedule(from, to),
-        getEvents(from, to),
       ])
       setDrivers(driversData)
       const map = new Map<string, boolean>()
@@ -79,7 +78,12 @@ export default function SchedulePage({ isAdmin }: Props) {
       setEntries(map)
       setPinnedEntries(pinned)
       setMonthlyHours(scheduleData.monthlyHoursPerDriver)
-      setEvents(buildEventsMap(eventsData))
+      // Events are supplementary — don't fail the whole page if this endpoint errors
+      try {
+        setEvents(buildEventsMap(await getEvents(from, to)))
+      } catch {
+        setEvents(new Map())
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load schedule')
     } finally {
