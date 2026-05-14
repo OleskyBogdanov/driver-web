@@ -24,6 +24,16 @@ function formatDate(dateStr: string) {
   return d.toLocaleDateString('en-US', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
+function TrashIcon() {
+  return (
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 6h18M8 6V4h8v2M19 6l-1.5 15H6.5L5 6" />
+      <line x1="10" y1="11" x2="10" y2="17" />
+      <line x1="14" y1="11" x2="14" y2="17" />
+    </svg>
+  )
+}
+
 export default function EventPanel({
   driver, date, isAdmin, working, events, onClose, onToggleWorking, onAddEvent, onDeleteEvent,
 }: Props) {
@@ -37,6 +47,7 @@ export default function EventPanel({
   const [assignedBy, setAssignedBy] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
+  const [confirmDeleteEvent, setConfirmDeleteEvent] = useState<DayEvent | null>(null)
 
   const isTask = type === 'TASK'
 
@@ -71,6 +82,12 @@ export default function EventPanel({
     }
   }
 
+  const handleConfirmDelete = async () => {
+    if (!confirmDeleteEvent) return
+    await onDeleteEvent(confirmDeleteEvent.id)
+    setConfirmDeleteEvent(null)
+  }
+
   return (
     <div className={styles.overlay} onClick={e => { if (e.target === e.currentTarget) onClose() }}>
       <div className={styles.panel}>
@@ -103,32 +120,35 @@ export default function EventPanel({
           ) : (
             <ul className={styles.eventList}>
               {events.map(ev => (
-                <li key={ev.id} className={styles.eventItem}>
+                <li key={ev.id} className={`${styles.eventItem} ${styles[`accent_${ev.type}`]}`}>
                   <div className={styles.eventMain}>
-                    <span className={styles.eventName}>{ev.name}</span>
-                    <span className={`${styles.eventType} ${styles[`type_${ev.type}`]}`}>
-                      {EVENT_TYPE_LABELS[ev.type]}
-                    </span>
-                    {ev.type === 'TASK' && (ev.timeFrom || ev.timeTo || ev.assignedBy) && (
+                    <div className={styles.eventTopRow}>
+                      <span className={`${styles.eventType} ${styles[`type_${ev.type}`]}`}>
+                        {EVENT_TYPE_LABELS[ev.type]}
+                      </span>
+                      <span className={styles.eventName}>{ev.name}</span>
+                    </div>
+                    {ev.type === 'TASK' && (ev.timeFrom || ev.timeTo) && (
                       <div className={styles.eventMeta}>
-                        {(ev.timeFrom || ev.timeTo) && (
-                          <span>{ev.timeFrom ?? '?'} – {ev.timeTo ?? '?'}</span>
-                        )}
-                        {ev.assignedBy && <span>Set by: {ev.assignedBy}</span>}
+                        {ev.timeFrom ?? '?'} – {ev.timeTo ?? '?'}
                       </div>
+                    )}
+                    {ev.type === 'TASK' && ev.assignedBy && (
+                      <div className={styles.eventMeta}>Set by: {ev.assignedBy}</div>
                     )}
                     {(ev.departurePoint || ev.arrivalPoint) && (
                       <div className={styles.eventPoints}>
-                        {ev.departurePoint && <span>From: {ev.departurePoint}</span>}
-                        {ev.arrivalPoint && <span>To: {ev.arrivalPoint}</span>}
+                        {ev.departurePoint ?? '?'} → {ev.arrivalPoint ?? '?'}
                       </div>
                     )}
                   </div>
                   <button
                     className={styles.deleteEventBtn}
-                    onClick={() => void onDeleteEvent(ev.id)}
+                    onClick={() => setConfirmDeleteEvent(ev)}
                     aria-label="Delete event"
-                  >✕</button>
+                  >
+                    <TrashIcon />
+                  </button>
                 </li>
               ))}
             </ul>
@@ -229,6 +249,28 @@ export default function EventPanel({
           </button>
         </form>
       </div>
+
+      {confirmDeleteEvent && (
+        <div
+          className={styles.confirmOverlay}
+          onClick={e => e.target === e.currentTarget && setConfirmDeleteEvent(null)}
+        >
+          <div className={styles.confirmBox}>
+            <h4 className={styles.confirmTitle}>Delete event</h4>
+            <p className={styles.confirmText}>
+              Delete <strong>{confirmDeleteEvent.name}</strong>? This cannot be undone.
+            </p>
+            <div className={styles.confirmActions}>
+              <button className={styles.cancelBtn} onClick={() => setConfirmDeleteEvent(null)}>
+                Cancel
+              </button>
+              <button className={styles.confirmDeleteBtn} onClick={() => void handleConfirmDelete()}>
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

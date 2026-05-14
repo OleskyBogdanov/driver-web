@@ -119,7 +119,7 @@ export default function DayViewPage({ isAdmin }: Props) {
                   ) : (
                     <ul className={styles.eventList}>
                       {driverEvents.map(ev => (
-                        <li key={ev.id} className={styles.eventItem}>
+                        <li key={ev.id} className={`${styles.eventItem} ${styles[`item_${ev.type}`]}`}>
                           <span className={`${styles.typeBadge} ${styles[`type_${ev.type}`]}`}>
                             {EVENT_TYPE_LABELS[ev.type]}
                           </span>
